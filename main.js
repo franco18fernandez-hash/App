@@ -3,7 +3,7 @@ const { app, BrowserWindow } = require("electron");
 function createWindow() {
   const win = new BrowserWindow({
     width: 350,
-    height: 200,
+    height: 350,
     resizable: false,
     maximizable: false,
     fullscreenable: false,
@@ -37,4 +37,3 @@ function abrir(url) {
         window.open(url, '_blank', 'noopener,noreferrer');
     }, 500);
 }
-
