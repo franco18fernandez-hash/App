@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel de Automatización</title>
+    <style>
+        /* Estilo moderno y oscuro tipo App */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 { margin-bottom: 30px; color: #00d2ff; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .btn-link {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: #1e1e1e;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Colores para distinguir botones */
+        .btn-link:active { transform: scale(0.95); }
+        .traductor { border-bottom: 4px solid #4285f4; }
+        .github { border-bottom: 4px solid #f34f29; }
+        .cerrar { border-bottom: 4px solid #ff4757; margin-top: 20px; grid-column: span 2; }
+
+    </style>
+</head>
+<body>
+
+    <h1>Panel de Franco</h1>
+
+    <div class="grid-container">
+        <button class="btn-link traductor" onclick="abrir('https://translate.google.com/?sl=auto&tl=es')">
+            🌐 Traductor
+        </button>
+
+        <button class="btn-link github" onclick="abrir('https://github.com')">
+            🐙 Mi GitHub
+        </button>
+
+        <button class="btn-link cerrar" onclick="window.close()">
+            ✖ Cerrar App
+        </button>
+    </div>
+
+    <script>
+        function abrir(url) {
+            // La Opción A: Abre el link en una pestaña nueva limpia
+            window.open(url, '_blank');
+        }
+    </script>
+
+</body>
+</html>
