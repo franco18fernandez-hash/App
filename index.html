@@ -2,93 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel de Automatización</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Traductor Franco</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" href="foto.jpg" type="image/jpg">
     <style>
-        /* Estilo moderno y oscuro tipo App */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+        body { font-family: 'Segoe UI', sans-serif; background: #c08ca9a9; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; }
+
+        #menu, #seccion-traductor { width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; transition: 0.3s; }
+
+        #seccion-traductor { display: none; background: #fd79a8; padding: 20px; box-sizing: border-box; }
+
+        .btn { padding: 15px 30px; font-size: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; background: #222; color: white; margin: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* Estilo para el selector de idioma */
+        select {
+            width: 90%; padding: 12px; border-radius: 8px; background: #222; color: white;
+            border: 2px solid #222; font-size: 16px; margin-bottom: 15px; outline: none;
         }
 
-        h1 { margin-bottom: 30px; color: #00d2ff; }
+        textarea { width: 90%; height: 120px; border-radius: 10px; border: none; padding: 15px; font-size: 16px; margin-bottom: 15px; background: #222; color: white; resize: none; }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: 90%;
-            max-width: 500px;
-        }
+        #resultado { width: 90%; min-height: 80px; background: #222; padding: 15px; border-radius: 5px; box-sizing: border-box; font-size: 18px; line-height: 1.4; }
 
-        .btn-link {
-            padding: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            background: #1e1e1e;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Colores para distinguir botones */
-        .btn-link:active { transform: scale(0.95); }
-        .traductor { border-bottom: 4px solid #4285f4; }
-        .github { border-bottom: 4px solid #f34f29; }
-        .cerrar { border-bottom: 4px solid #ff4757; margin-top: 20px; grid-column: span 2; }
-
+        .btn-volver { background: #222; color: white; position: absolute; top: 15px; left: 15px; padding: 10px 15px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <h1>Panel de Franco</h1>
-
-    <div class="grid-container">
-        <button class="btn-link traductor" onclick="abrir('https://translate.google.com/?hl=es')">
-            🌐 Traductor
-        </button>
-
-        <button class="btn-link github" onclick="abrir('https://github.com')">
-            🐙 Mi GitHub
-        </button>
-
-        <button class="btn-link cerrar" onclick="window.close()">
-            ✖ Cerrar App
-        </button>
+    <div id="menu">
+        <h1 style="color: #222;">App</h1>
+        <button class="btn" onclick="mostrarTraductor()">❤️Traductor personal❤️</button>
+        <button class="btn" onclick="window.close()" style="background:#ff4757">✘Cerrar App✘</button>
     </div>
 
-    <script>
-        function abrir(url) {
-    // Creamos un elemento 'a' invisible
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    
-    // Esto es lo más importante: 
-    // 'noreferrer' hace que Google no sepa que vienes de GitHub y te deje pasar
-    link.rel = 'noopener noreferrer'; 
-    
-    // Simulamos el clic
-    link.click();
-}
-    </script>
-
-</body>
-</html>
+    <div id="seccion-traductor">
+        <button class="btn btn-volver" onclick="volver()">⬅ Volver</button>
+        
+        <h2 id="titulo">Traductor Inteligente</h2>
+        
+        <select id="selector-idioma">
+            <option value="es|en">Español ⮕ Inglés</option>
+            <option value="en|es">Inglés ⮕ Español</option>
+        </select>
+        
+        <textarea id="texto-original" placeholder="Escribe aquí..."></textarea>
+        
+        <button class="btn" id="btn-traducir" onclick="traducir()">Traducir Ahora</button>
+        
+        <div id="resultado">Esperando texto...</div>
+    </div>
 
     <script>
         const menu = document.getElementById('menu');
@@ -112,17 +76,31 @@
         async function traducir() {
             const texto = input.value.trim();
             const idioma = selector.value;
+            
             if(!texto) return;
-            output.innerText = "Traduciendo... ⏳";
+
+            output.innerText = "Analizando y traduciendo... ⏳";
+            output.style.color = "#888";
+
             try {
+                // Usamos la URL con el parámetro 'de' para mejorar la detección
                 const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=${idioma}&de=franco18fernandez@gmail.com`;
+                
                 const respuesta = await fetch(url);
                 const datos = await respuesta.json();
+                
                 let resultado = datos.responseData.translatedText;
-                output.innerText = resultado;
-                output.style.color = "white";
+
+                // Verificamos si la API devolvió lo mismo (señal de que no entendió bien)
+                if(resultado.toLowerCase() === texto.toLowerCase()) {
+                    output.innerText = "⚠️ No estoy seguro de esa oración, ¿podés revisarla?";
+                    output.style.color = "#ffcc00";
+                } else {
+                    output.innerText = resultado;
+                    output.style.color = "white";
+                }
             } catch (error) {
-                output.innerText = "Error de conexión.";
+                output.innerText = "Error de conexión. Revisa tu Wi-Fi.";
                 output.style.color = "#ff4757";
             }
         }
