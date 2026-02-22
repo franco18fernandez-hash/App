@@ -1,86 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel Franco</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#121212">
-</head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel de Automatización</title>
+    
     <style>
-        /* Estilo moderno y oscuro tipo App */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        h1 { margin-bottom: 30px; color: #00d2ff; }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: 90%;
-            max-width: 500px;
+        body { font-family: sans-serif; background: #121212; color: white; margin: 0; overflow: hidden; }
+        
+        /* Contenedor del Menú */
+        #menu {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw;
         }
 
         .btn-link {
-            padding: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            background: #1e1e1e;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            padding: 20px 40px; font-size: 20px; background: #00d2ff; color: black;
+            border: none; border-radius: 15px; cursor: pointer; font-weight: bold;
         }
 
-        /* Colores para distinguir botones */
-        .btn-link:active { transform: scale(0.95); }
-        .traductor { border-bottom: 4px solid #4285f4; }
-        .github { border-bottom: 4px solid #f34f29; }
-        .cerrar { border-bottom: 4px solid #ff4757; margin-top: 20px; grid-column: span 2; }
+        /* Contenedor del Traductor (Oculto al inicio) */
+        #contenedor-traductor {
+            display: none; width: 100vw; height: 100vh; position: relative;
+        }
 
+        .btn-volver {
+            position: absolute; top: 10px; left: 10px; z-index: 1000;
+            padding: 10px 15px; background: #ff4757; color: white; border: none;
+            border-radius: 8px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <h1>Panel de Franco</h1>
+    <div id="menu">
+        <h1>Mi Aplicación</h1>
+        <button class="btn-link" onclick="abrirTraductor()">Abrir Traductor</button>
+    </div>
 
-    <div class="grid-container">
-        <button class="btn-link traductor" onclick="abrir('https://translate.google.com/?sl=auto&tl=es')">
-            🌐 Traductor
-        </button>
-
-        <button class="btn-link github" onclick="abrir('https://github.com')">
-            🐙 Mi GitHub
-        </button>
-
-        <button class="btn-link cerrar" onclick="window.close()">
-            ✖ Cerrar App
-        </button>
+    <div id="contenedor-traductor">
+        <button class="btn-volver" onclick="volver()">⬅ Menú</button>
+        <iframe id="marco-web"></iframe>
     </div>
 
     <script>
-        function abrir(url) {
-            // La Opción A: Abre el link en una pestaña nueva limpia
-            window.open(url, '_blank');
+        const menu = document.getElementById('menu');
+        const vista = document.getElementById('contenedor-traductor');
+        const marco = document.getElementById('marco-web');
+
+        function abrirTraductor() {
+            menu.style.display = 'none';
+            vista.style.display = 'block';
+            
+            // TRUCO: Usamos la versión móvil de Google Translate para evitar el bloqueo total
+            // Nota: Algunos navegadores de tablet aún pueden dar problemas, pero esta es la forma más directa.
+            marco.src = "https://translate.google.com/m?hl=es";
+        }
+
+        function volver() {
+            vista.style.display = 'none';
+            menu.style.display = 'flex';
+            marco.src = ""; // Limpia la carga
         }
     </script>
+</body>
+</html>
 
 </body>
+
 </html>
