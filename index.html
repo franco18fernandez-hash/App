@@ -28,12 +28,53 @@
         .btn-volver { background: #222; color: white; position: absolute; top: 15px; left: 15px; padding: 10px 15px; font-size: 14px; }
     </style>
 </head>
+<style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+
+    #menu { 
+            width: 100%; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: fixed; 
+            top: 0; left: 0;
+            transition: 0.3s;
+            /* CAMBIO AQUÍ: Nombre de archivo simple */
+            background-image: url('./foto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+    /* Agregué un fondo semi-transparente al título para que se lea siempre */
+    h1 { 
+        background: rgba(255, 255, 255, 0.7); 
+        padding: 10px 20px; 
+        border-radius: 10px; 
+        color: #222; 
+    }
+    
+    .btn { 
+        padding: 15px 30px; 
+        font-size: 18px; 
+        border: none; 
+        border-radius: 12px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        background: #222; 
+        color: white; 
+        margin: 10px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+</style>
 <body>
 
     <div id="menu">
         <h1 style="color: #222;">App</h1>
-        <button class="btn" onclick="mostrarTraductor()">❤️Traductor❤️</button>
-        <button class="btn" onclick="window.close()" style="background:#ff4757">❌Cerrar App❌</button>
+        <button class="btn" onclick="mostrarTraductor()">❤️Traductor personal❤️</button>
+        <button class="btn" onclick="window.close()">❌Cerrar App❌</button>
     </div>
 
     <div id="seccion-traductor">
@@ -74,26 +115,29 @@
 
         async function traducir() {
             const texto = input.value.trim();
-            const idioma = selector.value; // Obtiene "es|en" o "en|es"
+            const idioma = selector.value;
             
-            if(!texto) {
-                output.innerText = "Por favor, escribe algo primero.";
-                return;
-            }
+            if(!texto) return;
 
-            output.innerText = "Traduciendo... ⏳";
+            output.innerText = "Analizando y traduciendo... ⏳";
             output.style.color = "#888";
 
             try {
-                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=${idioma}`;
+                // Usamos la URL con el parámetro 'de' para mejorar la detección
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=${idioma}&de=franco18fernandez@gmail.com`;
+                
                 const respuesta = await fetch(url);
                 const datos = await respuesta.json();
                 
-                if(datos.responseData.translatedText) {
-                    output.innerText = datos.responseData.translatedText;
-                    output.style.color = "white";
+                let resultado = datos.responseData.translatedText;
+
+                // Verificamos si la API devolvió lo mismo (señal de que no entendió bien)
+                if(resultado.toLowerCase() === texto.toLowerCase()) {
+                    output.innerText = "⚠️ No estoy seguro de esa oración, ¿podés revisarla?";
+                    output.style.color = "#ffcc00";
                 } else {
-                    output.innerText = "No se encontró traducción.";
+                    output.innerText = resultado;
+                    output.style.color = "white";
                 }
             } catch (error) {
                 output.innerText = "Error de conexión. Revisa tu Wi-Fi.";
@@ -103,6 +147,3 @@
     </script>
 </body>
 </html>
-
-
-
