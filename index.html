@@ -3,74 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panel Franco</title>
+    <title>Traductor Franco</title>
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; margin: 0; overflow: hidden; }
-        
-        /* Contenedor del Menú */
-        #menu {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw;
+        body { font-family: 'Segoe UI', sans-serif; background: #161313; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; }
+
+        #menu, #seccion-traductor { width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; transition: 0.3s; }
+
+        #seccion-traductor { display: none; background: #fd79a8; padding: 20px; box-sizing: border-box; }
+
+        .btn { padding: 15px 30px; font-size: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; background: #222; color: white; margin: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* Estilo para el selector de idioma */
+        select {
+            width: 90%; padding: 12px; border-radius: 8px; background: #222; color: white;
+            border: 2px solid #222; font-size: 16px; margin-bottom: 15px; outline: none;
         }
 
-        .btn-link {
-            padding: 20px 40px; font-size: 20px; background: #00d2ff; color: black;
-            border: none; border-radius: 15px; cursor: pointer; font-weight: bold;
-        }
+        textarea { width: 90%; height: 120px; border-radius: 10px; border: none; padding: 15px; font-size: 16px; margin-bottom: 15px; background: #222; color: white; resize: none; }
 
-        /* Contenedor del Traductor (Oculto al inicio) */
-        #contenedor-traductor {
-            display: none; width: 100vw; height: 100vh; position: relative;
-        }
+        #resultado { width: 90%; min-height: 80px; background: #222; padding: 15px; border-radius: 5px; box-sizing: border-box; font-size: 18px; line-height: 1.4; }
 
-        .btn-volver {
-            position: absolute; top: 10px; left: 10px; z-index: 1000;
-            padding: 10px 15px; background: #ff4757; color: white; border: none;
-            border-radius: 8px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        iframe { width: 100%; height: 100%; border: none; }
+        .btn-volver { background: #222; color: white; position: absolute; top: 15px; left: 15px; padding: 10px 15px; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div id="menu">
-        <h1>Mi Aplicación</h1>
-        <button class="btn-link" onclick="abrirTraductor()">Abrir Traductor</button>
+        <h1 style="color: #00d2ff;">App</h1>
+        <button class="btn" onclick="mostrarTraductor()">Traductor</button>
+        <button class="btn" onclick="mostrarTraductor()">Cerrar App</button>
     </div>
 
-    <div id="contenedor-traductor">
-        <button class="btn-volver" onclick="volver()">⬅ Menú</button>
-        <iframe id="marco-web"></iframe>
+    <div id="seccion-traductor">
+        <button class="btn btn-volver" onclick="volver()">⬅ Volver</button>
+        
+        <h2 id="titulo">Traductor Inteligente</h2>
+        
+        <select id="selector-idioma">
+            <option value="es|en">Español ⮕ Inglés</option>
+            <option value="en|es">Inglés ⮕ Español</option>
+        </select>
+        
+        <textarea id="texto-original" placeholder="Escribe aquí..."></textarea>
+        
+        <button class="btn" id="btn-traducir" onclick="traducir()">Traducir Ahora</button>
+        
+        <div id="resultado">Esperando texto...</div>
     </div>
 
     <script>
         const menu = document.getElementById('menu');
-        const vista = document.getElementById('contenedor-traductor');
-        const marco = document.getElementById('marco-web');
+        const seccion = document.getElementById('seccion-traductor');
+        const input = document.getElementById('texto-original');
+        const output = document.getElementById('resultado');
+        const selector = document.getElementById('selector-idioma');
 
-        function abrirTraductor() {
+        function mostrarTraductor() {
             menu.style.display = 'none';
-            vista.style.display = 'block';
-            
-            // TRUCO: Usamos la versión móvil de Google Translate para evitar el bloqueo total
-            // Nota: Algunos navegadores de tablet aún pueden dar problemas, pero esta es la forma más directa.
-            marco.src = "https://dictionary.cambridge.org/es/translate/";
+            seccion.style.display = 'flex';
         }
 
         function volver() {
-            vista.style.display = 'none';
+            seccion.style.display = 'none';
             menu.style.display = 'flex';
-            marco.src = ""; // Limpia la carga
+            input.value = "";
+            output.innerText = "Esperando texto...";
+        }
+
+        async function traducir() {
+            const texto = input.value.trim();
+            const idioma = selector.value; // Obtiene "es|en" o "en|es"
+            
+            if(!texto) {
+                output.innerText = "Por favor, escribe algo primero.";
+                return;
+            }
+
+            output.innerText = "Traduciendo... ⏳";
+            output.style.color = "#888";
+
+            try {
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=${idioma}`;
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+                
+                if(datos.responseData.translatedText) {
+                    output.innerText = datos.responseData.translatedText;
+                    output.style.color = "white";
+                } else {
+                    output.innerText = "No se encontró traducción.";
+                }
+            } catch (error) {
+                output.innerText = "Error de conexión. Revisa tu Wi-Fi.";
+                output.style.color = "#ff4757";
+            }
         }
     </script>
 </body>
 </html>
-
-</body>
-
-</html>
-
