@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+  align-items: center;
+}
+
+
+body {
+  margin: 0;
+  width: 350px;
+  height: 250px;
+  background: rgb(214, 151, 183);
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+.app {
+  padding: 16px;
+}
+
+button,
+input,
+textarea,
+select {
+  -webkit-app-region: no-drag;
+  cursor: pointer;
+}
+
+.testBtn {
+  width: 500px;
+  height: 150px;
+}
+
+.btn-volver {
+  font-size: 10px;
+}
+
+.traductor {
+  font-style: italic;
+  padding: 100%;
+  margin: 100%;
+
+}
